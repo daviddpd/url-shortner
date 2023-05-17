@@ -1,6 +1,6 @@
 <?php
 // Hostname for your URL shortener
-$hostname = 'https://open.care2.com';
+$hostname = 'https://open.corp.care2.com';
 
 // PDO connection to the database
 // $connection = new PDO('mysql:dbname=shorty;host=localhost', 'user', 'password');
