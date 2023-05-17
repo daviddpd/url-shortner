@@ -1,12 +1,22 @@
 <?php
 // Hostname for your URL shortener
-$hostname = 'http://example.com';
+$hostname = 'https://open.care2.com';
 
 // PDO connection to the database
-$connection = new PDO('mysql:dbname=shorty;host=localhost', 'user', 'password');
+// $connection = new PDO('mysql:dbname=shorty;host=localhost', 'user', 'password');
+$connection = new PDO(
+    'mysql:host=heradb.corp.care2.com;dbname=shorty',
+    'shorty',
+    'XyoPUCEyMzvHUaARe8hQPbdK2DyuA3Vz',
+    array(
+        PDO::MYSQL_ATTR_SSL_CA    =>'/etc/ssl/certs/corp/ca-bundle-chain.pem'
+    )
+);
+
 
 // Choose your character set (default)
-$chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+// $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+// $chars = 'cMKPZNHC6miQESgGoT4V9B1e2sWjInp5zyl7UFkvuaLtRDJfwbhXd3x8rqAY';
 
 // The following are shuffled strings of the default character set.
 // You can uncomment one of the lines below to use a pre-generated set,
@@ -23,9 +33,9 @@ $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 // If you want your generated URLs to even harder to guess, you can set
 // the salt value below to any non empty value. This is especially useful for
 // encoding consecutive numbers.
-$salt = '';
+$salt = 'PLyHpLqk7HL8r3iN';
 
 // The padding length to use when the salt value is configured above.
 // The default value is 3.
-$padding = 3;
+$padding = 4;
 ?>
