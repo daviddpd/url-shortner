@@ -402,6 +402,8 @@ class Shorty {
                     $url[0] = $this->hostname.'/'.$this->encode($result['id']);
                     if ( ! is_null ($result['vanity']) ) {
                         $url[1] = $this->hostname.'/'.$result['vanity'];
+                    } else {
+                        $url[1] = $url[0];
                     }
                 }
 
