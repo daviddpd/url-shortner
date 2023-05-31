@@ -162,18 +162,18 @@ class Shorty {
     public static function num_to_alpha($n, $s) {
         $b = strlen($s); // 60
         $m = $n % $b; // 60 % 17 = 9
-		error_log ( json_encode (array ("num_to_alpha" => array ('n' => $n, 'm' => $m, 'b' => $b) ) ) );
+        error_log ( json_encode (array ("num_to_alpha" => array ('n' => $n, 'm' => $m, 'b' => $b) ) ) );
         if ($n - $m == 0) return substr($s, $n, 1); // 17-9 = 8 
 
         $a = '';
 
-		$i=0;
+        $i=0;
         while ($m > 0 || $n > 0) { 
             $a = substr($s, $m, 1).$a;
             $n = ($n - $m) / $b; 
             $m = $n % $b; 
-			error_log ( json_encode ( array ("num_to_alpha while [$i]" => array ('n' => $n, 'm' => $m, 'b' => $b) )) );
-			$i++;
+            error_log ( json_encode ( array ("num_to_alpha while [$i]" => array ('n' => $n, 'm' => $m, 'b' => $b) )) );
+            $i++;
         }
 
         return $a;
@@ -204,28 +204,28 @@ class Shorty {
      * @return array URL record
      */
     public function fetch($t) {
-		if ( !empty($this->salt) ) {
-			$salt = ";" . $this->salt;		
-		} else {
-			$salt = "";
-		}
-		$statement = $this->connection->prepare(
-			'SELECT * FROM urls WHERE short = ?'
-		);
-		$s = md5($t . $salt);
-		error_log ( json_encode ( array ( "fetch" => $t, "salt" => $salt, "short" => $s ) )  );
-		$statement->execute( array( $s ) );
-		if ( $statement->rowCount() == 0 && strlen($t) < 8 ) {
-			$id = self::decode($t);
-			error_log ( json_encode ( array ( "fetch-else" => $id, "salt" => $salt, "short" => $s ) )  );
-			$statement = $this->connection->prepare(
-				'SELECT * FROM urls WHERE id = ?'
-			);
-			$statement->execute(array( $id ) );
-		}
-		$r = $statement->fetch(PDO::FETCH_ASSOC);
-		error_log ( json_encode( array ( "results" => $r ) ) ) ;
-		return $r;
+        if ( !empty($this->salt) ) {
+            $salt = ";" . $this->salt;      
+        } else {
+            $salt = "";
+        }
+        $statement = $this->connection->prepare(
+            'SELECT * FROM urls WHERE short = ?'
+        );
+        $s = md5($t . $salt);
+        error_log ( json_encode ( array ( "fetch" => $t, "salt" => $salt, "short" => $s ) )  );
+        $statement->execute( array( $s ) );
+        if ( $statement->rowCount() == 0 && strlen($t) < 8 ) {
+            $id = self::decode($t);
+            error_log ( json_encode ( array ( "fetch-else" => $id, "salt" => $salt, "short" => $s ) )  );
+            $statement = $this->connection->prepare(
+                'SELECT * FROM urls WHERE id = ?'
+            );
+            $statement->execute(array( $id ) );
+        }
+        $r = $statement->fetch(PDO::FETCH_ASSOC);
+        error_log ( json_encode( array ( "results" => $r ) ) ) ;
+        return $r;
     }
 
     /**
@@ -235,7 +235,7 @@ class Shorty {
      * @return array URL record
      */
     public function find($url) {
-    	$md5 = md5($url);
+        $md5 = md5($url);
         $statement = $this->connection->prepare(
             'SELECT * FROM urls WHERE md5url = ?'
         );
@@ -252,7 +252,7 @@ class Shorty {
      */
     public function store($url, $vanity = NULL) {
         $datetime = date('Y-m-d H:i:s');
-    	$md5url = md5($url);
+        $md5url = md5($url);
 
         $statement = $this->connection->prepare(
             'INSERT INTO urls (url, created, md5url) VALUES (?,?,?)'
@@ -260,18 +260,18 @@ class Shorty {
         $statement->execute(array($url, $datetime, $md5url));
         $id = $this->connection->lastInsertId();
 
-		if ( !empty($this->salt) ) {
-			$salt = ";" . $this->salt;		
-		} else {
-			$salt = "";
-		}
-		if ( is_null($vanity) ) {
-			$v = $this->encode($id);
-			$short = md5($v . $salt);
-		} else  {
-			$v = preg_replace ( '/[\s\\\^\.\$\|\(\)\[\]*\+\?\{\}\,]+/', '', $vanity);
-			$short = md5($v . $salt);
-		}
+        if ( !empty($this->salt) ) {
+            $salt = ";" . $this->salt;      
+        } else {
+            $salt = "";
+        }
+        if ( is_null($vanity) ) {
+            $v = $this->encode($id);
+            $short = md5($v . $salt);
+        } else  {
+            $v = preg_replace ( '/[\s\\\^\.\$\|\(\)\[\]*\+\?\{\}\,]+/', '', $vanity);
+            $short = md5($v . $salt);
+        }
 
         $statement = $this->connection->prepare(
             'UPDATE urls set `short` = ?, `vanity` = ? where `id` = ? '
@@ -308,7 +308,7 @@ class Shorty {
      * Sends a 404 response.
      */
     public function not_found() {
-	    
+        
         header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
         exit('<h1>404 Not Found</h1>');
     }
@@ -319,12 +319,12 @@ class Shorty {
      * @param string $message Error message
      */
     public function error($message, $code = 400) {
-    	if ( $code ==	 500 ) {
-	        header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error');
-	    } else if ( $code == 400 ) {
-	        header($_SERVER['SERVER_PROTOCOL'] . ' 400 Bad Request');
-	    }
-	    exit("<h1>$message</h1>");
+        if ( $code ==    500 ) {
+            header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error');
+        } else if ( $code == 400 ) {
+            header($_SERVER['SERVER_PROTOCOL'] . ' 400 Bad Request');
+        }
+        exit("<h1>$message</h1>");
     }
 
     /**
@@ -332,8 +332,8 @@ class Shorty {
      */
     public function run() {
         if (isset($_GET['q'])) {
-	        $q = str_replace('/', '', $_GET['q']);
-	    }
+            $q = str_replace('/', '', $_GET['q']);
+        }
         $url = '';
         if (isset($_GET['url'])) {
           $url = urldecode($_GET['url']);
@@ -341,7 +341,7 @@ class Shorty {
         if (isset($_GET['v'])) {
           $vanity = urldecode($_GET['v']);
         } else {
-	        $vanity = NULL;
+            $vanity = NULL;
         }
 
         $format = '';
@@ -358,19 +358,19 @@ class Shorty {
                 if (empty($result)) {
 
                     $id = $this->store($url, $vanity);
-	                $result = $this->find($url);
-					$url = array ();                
+                    $result = $this->find($url);
+                    $url = array ();                
                     $url[0] = $this->hostname.'/'.$this->encode($id);
                     if ( ! is_null ($result['vanity']) ) {
-	                    $url[1] = $this->hostname.'/'.$result['vanity'];
-	                }
+                        $url[1] = $this->hostname.'/'.$result['vanity'];
+                    }
                 }
                 else {
-    				$url = array ();
-	                $url[0] = $this->hostname.'/'.$this->encode($result['id']);
+                    $url = array ();
+                    $url[0] = $this->hostname.'/'.$this->encode($result['id']);
                     if ( ! is_null ($result['vanity']) ) {
-	                    $url[1] = $this->hostname.'/'.$result['vanity'];
-	                }
+                        $url[1] = $this->hostname.'/'.$result['vanity'];
+                    }
                 }
 
                 // Display the shortened url
@@ -393,10 +393,10 @@ class Shorty {
                         )));
 
                     default:
-                    	$msg="";
-                    	foreach ( $url as $u ) {
-                    		$msg .= '<a href="'.$u.'">'.$u.'</a>' . "<br/>\n";
-                    	}
+                        $msg="";
+                        foreach ( $url as $u ) {
+                            $msg .= '<a href="'.$u.'">'.$u.'</a>' . "<br/>\n";
+                        }
                         exit($msg);
                 }
             }
@@ -413,7 +413,7 @@ class Shorty {
 
             if (preg_match('/^([a-zA-Z0-9]+)$/', $q, $matches)) {
                 $result = $this->fetch($matches[1]);
-				$id = $result['id'];
+                $id = $result['id'];
                 if (!empty($result)) {
                     $this->update($id);
 
