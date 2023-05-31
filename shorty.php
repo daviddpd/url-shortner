@@ -205,7 +205,7 @@ class Shorty {
      */
     public function fetch($t) {
         if ( !empty($this->salt) ) {
-            $salt = ";" . $this->salt;      
+            $salt = ";" . $this->salt;
         } else {
             $salt = "";
         }
@@ -227,6 +227,18 @@ class Shorty {
         error_log ( json_encode( array ( "results" => $r ) ) ) ;
         return $r;
     }
+
+    public function list_all() {
+    
+        $statement = $this->connection->prepare(
+            'SELECT * FROM urls order by id'
+        );
+        $statement->execute();
+        $r = $statement->fetchAll(PDO::FETCH_ASSOC);
+        # error_log ( json_encode( array ( "results" => $r ) ) ) ;
+        return $r;
+    }
+
 
     /**
      * Attempts to locate a URL in the database.
@@ -255,13 +267,32 @@ class Shorty {
         $md5url = md5($url);
 
         $statement = $this->connection->prepare(
-            'INSERT INTO urls (url, created, md5url) VALUES (?,?,?)'
+            'INSERT INTO urls (url, created, md5url, vanity) VALUES (?,?,?,?)'
+        );
+        $statement->execute(array($url, $datetime, $md5url, $vanity));
+        $id = $this->connection->lastInsertId();
+        
+        return $this->store_md5vanity($id, $url, $vanity);
+        
+    }
+    public function edit($id, $url, $vanity = NULL) {
+        $datetime = date('Y-m-d H:i:s');
+        $md5url = md5($url);
+
+        $statement = $this->connection->prepare(
+            'UPDATE urls set `url` = ?, `vanity` = ? where `id` = ? '
         );
         $statement->execute(array($url, $datetime, $md5url));
-        $id = $this->connection->lastInsertId();
+        return $this->store_md5vanity($id, $url, $vanity);
+    }
 
+    public function store_md5vanity($id, $url, $vanity = NULL) {
+        # This is just a salted MD5 for the encoded ID or the Vanity URL.
+        # Fetch is looking up on this value ... because 
+        # incoming shorted vanity URLs won't decode to an ID.
+        
         if ( !empty($this->salt) ) {
-            $salt = ";" . $this->salt;      
+            $salt = ";" . $this->salt;
         } else {
             $salt = "";
         }
@@ -274,7 +305,7 @@ class Shorty {
         }
 
         $statement = $this->connection->prepare(
-            'UPDATE urls set `short` = ?, `vanity` = ? where `id` = ? '
+            'UPDATE urls set `short` = ? where `id` = ? '
         );
         $statement->execute(array($short, $v, $id));
         return $id;
@@ -293,6 +324,7 @@ class Shorty {
         );
         $statement->execute(array($datetime, $id));
     }
+    
 
     /**
      * Sends a redirect to a URL.
