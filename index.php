@@ -11,7 +11,7 @@ $shorty->set_padding($padding);
 
 if ( $_SERVER['REQUEST_METHOD'] == "POST" ) {
     header('Content-type: application/json');
-    if ( $_SERVER['REQUEST_URI'] == "/list_all" ) {
+    if ( $_GET['q'] == "list_all" ) {
         $r = $shorty->list_all();
         echo json_encode( array ( "results" => $r ), JSON_PRETTY_PRINT);
     } else {
