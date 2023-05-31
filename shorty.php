@@ -231,7 +231,7 @@ class Shorty {
     public function list_all() {
     
         $statement = $this->connection->prepare(
-            'SELECT * FROM urls order by id'
+            'SELECT * FROM urls order by id desc'
         );
         $statement->execute();
         $r = $statement->fetchAll(PDO::FETCH_ASSOC);
